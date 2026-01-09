@@ -235,6 +235,7 @@
       <h1>Topics</h1>
       <div class="header-actions">
         <div class="status"><span id="done">0</span> of <span id="total">0</span></div>
+        <button class="edit-btn" id="resetBtn" style="display:none">Reset</button>
         <button class="edit-btn" id="editBtn" style="display:none">Edit</button>
       </div>
     </header>
@@ -266,6 +267,7 @@
     const topicList = document.getElementById('topicList');
     const startBtn = document.getElementById('startBtn');
     const editBtn = document.getElementById('editBtn');
+    const resetBtn = document.getElementById('resetBtn');
     const container = document.getElementById('cards');
     const dotsContainer = document.getElementById('dots');
     const doneEl = document.getElementById('done');
@@ -313,6 +315,7 @@
       setup.classList.remove('active');
       presentation.classList.add('active');
       editBtn.style.display = 'block';
+      resetBtn.style.display = 'block';
       renderPresentation();
     };
 
@@ -320,8 +323,15 @@
       presentation.classList.remove('active');
       setup.classList.add('active');
       editBtn.style.display = 'none';
+      resetBtn.style.display = 'none';
       container.innerHTML = '';
       dotsContainer.innerHTML = '';
+    };
+
+    resetBtn.onclick = () => {
+      document.querySelectorAll('.card').forEach(card => card.classList.remove('done'));
+      document.querySelectorAll('.dot').forEach(dot => dot.classList.remove('active'));
+      doneEl.textContent = '0';
     };
 
     function renderPresentation() {
