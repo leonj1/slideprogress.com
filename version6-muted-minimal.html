@@ -225,6 +225,28 @@
       gap: 16px;
       padding: 14px 0;
       border-bottom: 1px solid #27272a;
+      cursor: grab;
+      transition: background 0.2s ease, opacity 0.2s ease;
+    }
+    .topic-item:active {
+      cursor: grabbing;
+    }
+    .topic-item.dragging {
+      opacity: 0.4;
+      background: rgba(255,255,255,0.05);
+    }
+    .topic-item.drag-over {
+      border-top: 2px solid #fafafa;
+    }
+    .topic-item .drag-handle {
+      color: #3f3f46;
+      font-size: 1rem;
+      cursor: grab;
+      padding: 0 4px;
+      user-select: none;
+    }
+    .topic-item .drag-handle:hover {
+      color: #71717a;
     }
     .topic-item .num {
       color: #52525b;
@@ -524,14 +546,62 @@
       currentTopics.forEach((topic, i) => {
         const item = document.createElement('div');
         item.className = 'topic-item';
+        item.draggable = true;
+        item.dataset.index = i;
         item.innerHTML = `
+          <span class="drag-handle">⋮⋮</span>
           <span class="num">${i + 1}</span>
           <span class="text">${topic}</span>
           <button class="remove-btn" data-index="${i}">&times;</button>
         `;
+        item.ondragstart = handleDragStart;
+        item.ondragend = handleDragEnd;
+        item.ondragover = handleDragOver;
+        item.ondragleave = handleDragLeave;
+        item.ondrop = handleDrop;
         topicList.appendChild(item);
       });
       updateSaveBtn();
+    }
+
+    let draggedIndex = null;
+
+    function handleDragStart(e) {
+      draggedIndex = parseInt(this.dataset.index);
+      this.classList.add('dragging');
+      e.dataTransfer.effectAllowed = 'move';
+    }
+
+    function handleDragEnd(e) {
+      this.classList.remove('dragging');
+      document.querySelectorAll('.topic-item').forEach(item => {
+        item.classList.remove('drag-over');
+      });
+      draggedIndex = null;
+    }
+
+    function handleDragOver(e) {
+      e.preventDefault();
+      e.dataTransfer.dropEffect = 'move';
+      const targetIndex = parseInt(this.dataset.index);
+      if (targetIndex !== draggedIndex) {
+        this.classList.add('drag-over');
+      }
+    }
+
+    function handleDragLeave(e) {
+      this.classList.remove('drag-over');
+    }
+
+    function handleDrop(e) {
+      e.preventDefault();
+      this.classList.remove('drag-over');
+      const targetIndex = parseInt(this.dataset.index);
+      if (draggedIndex !== null && draggedIndex !== targetIndex) {
+        const [moved] = currentTopics.splice(draggedIndex, 1);
+        currentTopics.splice(targetIndex, 0, moved);
+        renderTopicList();
+      }
     }
 
     function updateSaveBtn() {
