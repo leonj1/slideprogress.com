@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Presentation Topics - Muted Minimal</title>
+  <title>Presentation Topics</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
@@ -31,11 +31,139 @@
       font-size: 1.8rem;
       font-weight: 500;
     }
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
     .status {
       color: #52525b;
       font-size: 0.9rem;
     }
     .status span { color: #a1a1aa; }
+    .edit-btn {
+      background: none;
+      border: 1px solid #3f3f46;
+      color: #71717a;
+      padding: 6px 14px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 0.8rem;
+      transition: all 0.2s ease;
+    }
+    .edit-btn:hover {
+      border-color: #52525b;
+      color: #a1a1aa;
+    }
+
+    /* Setup mode */
+    .setup {
+      display: none;
+    }
+    .setup.active {
+      display: block;
+    }
+    .setup-header {
+      color: #a1a1aa;
+      font-size: 0.85rem;
+      margin-bottom: 20px;
+    }
+    .topic-input-wrap {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+    .topic-input {
+      flex: 1;
+      background: #27272a;
+      border: 1px solid #3f3f46;
+      color: #fafafa;
+      padding: 14px 18px;
+      border-radius: 6px;
+      font-size: 1rem;
+      outline: none;
+      transition: border-color 0.2s ease;
+    }
+    .topic-input:focus {
+      border-color: #52525b;
+    }
+    .topic-input::placeholder {
+      color: #52525b;
+    }
+    .add-btn {
+      background: #27272a;
+      border: 1px solid #3f3f46;
+      color: #a1a1aa;
+      padding: 0 20px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 1.2rem;
+      transition: all 0.2s ease;
+    }
+    .add-btn:hover {
+      background: #3f3f46;
+      color: #fafafa;
+    }
+    .topic-list {
+      margin-bottom: 30px;
+    }
+    .topic-item {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 14px 0;
+      border-bottom: 1px solid #27272a;
+    }
+    .topic-item .num {
+      color: #52525b;
+      font-size: 0.9rem;
+      min-width: 24px;
+    }
+    .topic-item .text {
+      flex: 1;
+      color: #d4d4d8;
+      font-size: 1rem;
+    }
+    .remove-btn {
+      background: none;
+      border: none;
+      color: #52525b;
+      cursor: pointer;
+      font-size: 1.1rem;
+      padding: 4px 8px;
+      transition: color 0.2s ease;
+    }
+    .remove-btn:hover {
+      color: #ef4444;
+    }
+    .start-btn {
+      background: #fafafa;
+      border: none;
+      color: #18181b;
+      padding: 14px 32px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.95rem;
+      font-weight: 500;
+      transition: all 0.2s ease;
+      margin-top: 10px;
+    }
+    .start-btn:hover {
+      background: #e4e4e7;
+    }
+    .start-btn:disabled {
+      background: #3f3f46;
+      color: #71717a;
+      cursor: not-allowed;
+    }
+
+    /* Presentation mode */
+    .presentation {
+      display: none;
+    }
+    .presentation.active {
+      display: block;
+    }
     .card {
       background: transparent;
       border-left: 3px solid #3f3f46;
@@ -105,49 +233,123 @@
   <div class="container">
     <header>
       <h1>Topics</h1>
-      <div class="status"><span id="done">0</span> of <span id="total">0</span></div>
+      <div class="header-actions">
+        <div class="status"><span id="done">0</span> of <span id="total">0</span></div>
+        <button class="edit-btn" id="editBtn" style="display:none">Edit</button>
+      </div>
     </header>
-    <div id="cards"></div>
-    <div class="dots" id="dots"></div>
-    <div class="instructions">Click each topic when complete</div>
+
+    <div class="setup active" id="setup">
+      <div class="setup-header">Add your presentation topics</div>
+      <div class="topic-input-wrap">
+        <input type="text" class="topic-input" id="topicInput" placeholder="Enter a topic..." autocomplete="off">
+        <button class="add-btn" id="addBtn">+</button>
+      </div>
+      <div class="topic-list" id="topicList"></div>
+      <button class="start-btn" id="startBtn" disabled>Start Presentation</button>
+    </div>
+
+    <div class="presentation" id="presentation">
+      <div id="cards"></div>
+      <div class="dots" id="dots"></div>
+      <div class="instructions">Click each topic when complete</div>
+    </div>
   </div>
 
   <script>
-    const topics = [
-      "Introduction",
-      "Context & Background",
-      "Key Insights",
-      "Technical Details",
-      "Demonstration",
-      "Wrap-up"
-    ];
+    let topics = [];
 
+    const setup = document.getElementById('setup');
+    const presentation = document.getElementById('presentation');
+    const topicInput = document.getElementById('topicInput');
+    const addBtn = document.getElementById('addBtn');
+    const topicList = document.getElementById('topicList');
+    const startBtn = document.getElementById('startBtn');
+    const editBtn = document.getElementById('editBtn');
     const container = document.getElementById('cards');
     const dotsContainer = document.getElementById('dots');
     const doneEl = document.getElementById('done');
     const totalEl = document.getElementById('total');
 
-    totalEl.textContent = topics.length;
+    function renderTopicList() {
+      topicList.innerHTML = '';
+      topics.forEach((topic, i) => {
+        const item = document.createElement('div');
+        item.className = 'topic-item';
+        item.innerHTML = `
+          <span class="num">${i + 1}</span>
+          <span class="text">${topic}</span>
+          <button class="remove-btn" data-index="${i}">&times;</button>
+        `;
+        topicList.appendChild(item);
+      });
+      startBtn.disabled = topics.length === 0;
+    }
 
-    topics.forEach((topic, i) => {
-      const card = document.createElement('div');
-      card.className = 'card';
-      card.dataset.index = i;
-      card.innerHTML = `
-        <div class="num">${String(i + 1).padStart(2, '0')}</div>
-        <div class="title">${topic}</div>
-      `;
-      card.onclick = () => {
-        card.classList.toggle('done');
-        updateStatus();
-      };
-      container.appendChild(card);
+    function addTopic() {
+      const value = topicInput.value.trim();
+      if (value) {
+        topics.push(value);
+        topicInput.value = '';
+        renderTopicList();
+        topicInput.focus();
+      }
+    }
 
-      const dot = document.createElement('div');
-      dot.className = 'dot';
-      dot.dataset.index = i;
-      dotsContainer.appendChild(dot);
-    });
+    addBtn.onclick = addTopic;
+    topicInput.onkeydown = (e) => {
+      if (e.key === 'Enter') addTopic();
+    };
+
+    topicList.onclick = (e) => {
+      if (e.target.classList.contains('remove-btn')) {
+        const index = parseInt(e.target.dataset.index);
+        topics.splice(index, 1);
+        renderTopicList();
+      }
+    };
+
+    startBtn.onclick = () => {
+      setup.classList.remove('active');
+      presentation.classList.add('active');
+      editBtn.style.display = 'block';
+      renderPresentation();
+    };
+
+    editBtn.onclick = () => {
+      presentation.classList.remove('active');
+      setup.classList.add('active');
+      editBtn.style.display = 'none';
+      container.innerHTML = '';
+      dotsContainer.innerHTML = '';
+    };
+
+    function renderPresentation() {
+      container.innerHTML = '';
+      dotsContainer.innerHTML = '';
+      totalEl.textContent = topics.length;
+      doneEl.textContent = '0';
+
+      topics.forEach((topic, i) => {
+        const card = document.createElement('div');
+        card.className = 'card';
+        card.dataset.index = i;
+        card.innerHTML = `
+          <div class="num">${String(i + 1).padStart(2, '0')}</div>
+          <div class="title">${topic}</div>
+        `;
+        card.onclick = () => {
+          card.classList.toggle('done');
+          updateStatus();
+        };
+        container.appendChild(card);
+
+        const dot = document.createElement('div');
+        dot.className = 'dot';
+        dot.dataset.index = i;
+        dotsContainer.appendChild(dot);
+      });
+    }
 
     function updateStatus() {
       let count = 0;
