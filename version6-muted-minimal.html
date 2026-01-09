@@ -34,14 +34,15 @@
     .header-actions {
       display: flex;
       align-items: center;
-      gap: 20px;
+      gap: 12px;
     }
     .status {
       color: #52525b;
       font-size: 0.9rem;
+      margin-right: 8px;
     }
     .status span { color: #a1a1aa; }
-    .edit-btn {
+    .header-btn {
       background: none;
       border: 1px solid #3f3f46;
       color: #71717a;
@@ -51,9 +52,99 @@
       font-size: 0.8rem;
       transition: all 0.2s ease;
     }
-    .edit-btn:hover {
+    .header-btn:hover {
       border-color: #52525b;
       color: #a1a1aa;
+    }
+
+    /* Home / List view */
+    .home {
+      display: none;
+    }
+    .home.active {
+      display: block;
+    }
+    .home-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 30px;
+    }
+    .home-title {
+      color: #a1a1aa;
+      font-size: 0.85rem;
+    }
+    .new-btn {
+      background: #fafafa;
+      border: none;
+      color: #18181b;
+      padding: 10px 20px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.85rem;
+      font-weight: 500;
+      transition: all 0.2s ease;
+    }
+    .new-btn:hover {
+      background: #e4e4e7;
+    }
+    .pres-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .pres-item {
+      background: transparent;
+      border: 1px solid #27272a;
+      border-radius: 8px;
+      padding: 20px 24px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .pres-item:hover {
+      border-color: #3f3f46;
+      background: rgba(255,255,255,0.02);
+    }
+    .pres-info { flex: 1; }
+    .pres-name {
+      color: #d4d4d8;
+      font-size: 1.1rem;
+      font-weight: 500;
+      margin-bottom: 4px;
+    }
+    .pres-meta {
+      color: #52525b;
+      font-size: 0.8rem;
+    }
+    .pres-actions {
+      display: flex;
+      gap: 8px;
+    }
+    .pres-action {
+      background: none;
+      border: none;
+      color: #52525b;
+      cursor: pointer;
+      padding: 6px 10px;
+      font-size: 0.85rem;
+      transition: color 0.2s ease;
+    }
+    .pres-action:hover {
+      color: #a1a1aa;
+    }
+    .pres-action.delete:hover {
+      color: #ef4444;
+    }
+    .empty-state {
+      text-align: center;
+      padding: 60px 20px;
+      color: #52525b;
+    }
+    .empty-state p {
+      margin-bottom: 20px;
     }
 
     /* Setup mode */
@@ -67,6 +158,27 @@
       color: #a1a1aa;
       font-size: 0.85rem;
       margin-bottom: 20px;
+    }
+    .name-input-wrap {
+      margin-bottom: 24px;
+    }
+    .name-input {
+      width: 100%;
+      background: transparent;
+      border: none;
+      border-bottom: 1px solid #3f3f46;
+      color: #fafafa;
+      padding: 12px 0;
+      font-size: 1.4rem;
+      font-weight: 500;
+      outline: none;
+      transition: border-color 0.2s ease;
+    }
+    .name-input:focus {
+      border-color: #52525b;
+    }
+    .name-input::placeholder {
+      color: #3f3f46;
     }
     .topic-input-wrap {
       display: flex;
@@ -136,7 +248,12 @@
     .remove-btn:hover {
       color: #ef4444;
     }
-    .start-btn {
+    .setup-actions {
+      display: flex;
+      gap: 12px;
+      margin-top: 10px;
+    }
+    .save-btn {
       background: #fafafa;
       border: none;
       color: #18181b;
@@ -146,15 +263,28 @@
       font-size: 0.95rem;
       font-weight: 500;
       transition: all 0.2s ease;
-      margin-top: 10px;
     }
-    .start-btn:hover {
+    .save-btn:hover {
       background: #e4e4e7;
     }
-    .start-btn:disabled {
+    .save-btn:disabled {
       background: #3f3f46;
       color: #71717a;
       cursor: not-allowed;
+    }
+    .cancel-btn {
+      background: none;
+      border: 1px solid #3f3f46;
+      color: #71717a;
+      padding: 14px 24px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.95rem;
+      transition: all 0.2s ease;
+    }
+    .cancel-btn:hover {
+      border-color: #52525b;
+      color: #a1a1aa;
     }
 
     /* Presentation mode */
@@ -232,22 +362,36 @@
 <body>
   <div class="container">
     <header>
-      <h1>Topics</h1>
+      <h1 id="headerTitle">Presentations</h1>
       <div class="header-actions">
-        <div class="status"><span id="done">0</span> of <span id="total">0</span></div>
-        <button class="edit-btn" id="resetBtn" style="display:none">Reset</button>
-        <button class="edit-btn" id="editBtn" style="display:none">Edit</button>
+        <div class="status" id="statusWrap" style="display:none"><span id="done">0</span> of <span id="total">0</span></div>
+        <button class="header-btn" id="resetBtn" style="display:none">Reset</button>
+        <button class="header-btn" id="backBtn" style="display:none">Back</button>
       </div>
     </header>
 
-    <div class="setup active" id="setup">
-      <div class="setup-header">Add your presentation topics</div>
+    <div class="home active" id="home">
+      <div class="home-header">
+        <div class="home-title">Your presentations</div>
+        <button class="new-btn" id="newBtn">+ New</button>
+      </div>
+      <div class="pres-list" id="presList"></div>
+    </div>
+
+    <div class="setup" id="setup">
+      <div class="name-input-wrap">
+        <input type="text" class="name-input" id="nameInput" placeholder="Presentation name..." autocomplete="off">
+      </div>
+      <div class="setup-header">Add topics</div>
       <div class="topic-input-wrap">
         <input type="text" class="topic-input" id="topicInput" placeholder="Enter a topic..." autocomplete="off">
         <button class="add-btn" id="addBtn">+</button>
       </div>
       <div class="topic-list" id="topicList"></div>
-      <button class="start-btn" id="startBtn" disabled>Start Presentation</button>
+      <div class="setup-actions">
+        <button class="save-btn" id="saveBtn" disabled>Save</button>
+        <button class="cancel-btn" id="cancelBtn">Cancel</button>
+      </div>
     </div>
 
     <div class="presentation" id="presentation">
@@ -258,24 +402,126 @@
   </div>
 
   <script>
-    let topics = [];
+    let presentations = JSON.parse(localStorage.getItem('presentations') || '[]');
+    let currentTopics = [];
+    let editingId = null;
+    let currentPresId = null;
 
+    const home = document.getElementById('home');
     const setup = document.getElementById('setup');
     const presentation = document.getElementById('presentation');
+    const headerTitle = document.getElementById('headerTitle');
+    const statusWrap = document.getElementById('statusWrap');
+    const resetBtn = document.getElementById('resetBtn');
+    const backBtn = document.getElementById('backBtn');
+    const newBtn = document.getElementById('newBtn');
+    const presList = document.getElementById('presList');
+    const nameInput = document.getElementById('nameInput');
     const topicInput = document.getElementById('topicInput');
     const addBtn = document.getElementById('addBtn');
     const topicList = document.getElementById('topicList');
-    const startBtn = document.getElementById('startBtn');
-    const editBtn = document.getElementById('editBtn');
-    const resetBtn = document.getElementById('resetBtn');
+    const saveBtn = document.getElementById('saveBtn');
+    const cancelBtn = document.getElementById('cancelBtn');
     const container = document.getElementById('cards');
     const dotsContainer = document.getElementById('dots');
     const doneEl = document.getElementById('done');
     const totalEl = document.getElementById('total');
 
+    function savePresentations() {
+      localStorage.setItem('presentations', JSON.stringify(presentations));
+    }
+
+    function showView(view) {
+      home.classList.remove('active');
+      setup.classList.remove('active');
+      presentation.classList.remove('active');
+      view.classList.add('active');
+
+      statusWrap.style.display = 'none';
+      resetBtn.style.display = 'none';
+      backBtn.style.display = 'none';
+
+      if (view === home) {
+        headerTitle.textContent = 'Presentations';
+      } else if (view === setup) {
+        headerTitle.textContent = editingId ? 'Edit' : 'New';
+        backBtn.style.display = 'block';
+      } else if (view === presentation) {
+        statusWrap.style.display = 'block';
+        resetBtn.style.display = 'block';
+        backBtn.style.display = 'block';
+      }
+    }
+
+    function renderPresList() {
+      presList.innerHTML = '';
+      if (presentations.length === 0) {
+        presList.innerHTML = `
+          <div class="empty-state">
+            <p>No presentations yet</p>
+            <button class="new-btn" onclick="startNew()">Create your first</button>
+          </div>
+        `;
+        return;
+      }
+      presentations.forEach(pres => {
+        const item = document.createElement('div');
+        item.className = 'pres-item';
+        item.innerHTML = `
+          <div class="pres-info">
+            <div class="pres-name">${pres.name}</div>
+            <div class="pres-meta">${pres.topics.length} topic${pres.topics.length !== 1 ? 's' : ''}</div>
+          </div>
+          <div class="pres-actions">
+            <button class="pres-action edit" data-id="${pres.id}">Edit</button>
+            <button class="pres-action delete" data-id="${pres.id}">Delete</button>
+          </div>
+        `;
+        item.querySelector('.pres-info').onclick = () => startPresentation(pres.id);
+        item.querySelector('.edit').onclick = (e) => { e.stopPropagation(); editPresentation(pres.id); };
+        item.querySelector('.delete').onclick = (e) => { e.stopPropagation(); deletePresentation(pres.id); };
+        presList.appendChild(item);
+      });
+    }
+
+    function startNew() {
+      editingId = null;
+      currentTopics = [];
+      nameInput.value = '';
+      renderTopicList();
+      showView(setup);
+      nameInput.focus();
+    }
+
+    function editPresentation(id) {
+      const pres = presentations.find(p => p.id === id);
+      if (!pres) return;
+      editingId = id;
+      currentTopics = [...pres.topics];
+      nameInput.value = pres.name;
+      renderTopicList();
+      showView(setup);
+      nameInput.focus();
+    }
+
+    function deletePresentation(id) {
+      presentations = presentations.filter(p => p.id !== id);
+      savePresentations();
+      renderPresList();
+    }
+
+    function startPresentation(id) {
+      const pres = presentations.find(p => p.id === id);
+      if (!pres) return;
+      currentPresId = id;
+      headerTitle.textContent = pres.name;
+      renderPresentationCards(pres.topics);
+      showView(presentation);
+    }
+
     function renderTopicList() {
       topicList.innerHTML = '';
-      topics.forEach((topic, i) => {
+      currentTopics.forEach((topic, i) => {
         const item = document.createElement('div');
         item.className = 'topic-item';
         item.innerHTML = `
@@ -285,13 +531,17 @@
         `;
         topicList.appendChild(item);
       });
-      startBtn.disabled = topics.length === 0;
+      updateSaveBtn();
+    }
+
+    function updateSaveBtn() {
+      saveBtn.disabled = nameInput.value.trim() === '' || currentTopics.length === 0;
     }
 
     function addTopic() {
       const value = topicInput.value.trim();
       if (value) {
-        topics.push(value);
+        currentTopics.push(value);
         topicInput.value = '';
         renderTopicList();
         topicInput.focus();
@@ -299,33 +549,47 @@
     }
 
     addBtn.onclick = addTopic;
-    topicInput.onkeydown = (e) => {
-      if (e.key === 'Enter') addTopic();
-    };
+    topicInput.onkeydown = (e) => { if (e.key === 'Enter') addTopic(); };
+    nameInput.oninput = updateSaveBtn;
 
     topicList.onclick = (e) => {
       if (e.target.classList.contains('remove-btn')) {
         const index = parseInt(e.target.dataset.index);
-        topics.splice(index, 1);
+        currentTopics.splice(index, 1);
         renderTopicList();
       }
     };
 
-    startBtn.onclick = () => {
-      setup.classList.remove('active');
-      presentation.classList.add('active');
-      editBtn.style.display = 'block';
-      resetBtn.style.display = 'block';
-      renderPresentation();
+    saveBtn.onclick = () => {
+      const name = nameInput.value.trim();
+      if (!name || currentTopics.length === 0) return;
+
+      if (editingId) {
+        const pres = presentations.find(p => p.id === editingId);
+        if (pres) {
+          pres.name = name;
+          pres.topics = [...currentTopics];
+        }
+      } else {
+        presentations.push({
+          id: Date.now().toString(),
+          name,
+          topics: [...currentTopics]
+        });
+      }
+      savePresentations();
+      renderPresList();
+      showView(home);
     };
 
-    editBtn.onclick = () => {
-      presentation.classList.remove('active');
-      setup.classList.add('active');
-      editBtn.style.display = 'none';
-      resetBtn.style.display = 'none';
-      container.innerHTML = '';
-      dotsContainer.innerHTML = '';
+    cancelBtn.onclick = () => {
+      showView(home);
+    };
+
+    newBtn.onclick = startNew;
+
+    backBtn.onclick = () => {
+      showView(home);
     };
 
     resetBtn.onclick = () => {
@@ -334,7 +598,7 @@
       doneEl.textContent = '0';
     };
 
-    function renderPresentation() {
+    function renderPresentationCards(topics) {
       container.innerHTML = '';
       dotsContainer.innerHTML = '';
       totalEl.textContent = topics.length;
@@ -374,6 +638,9 @@
       });
       doneEl.textContent = count;
     }
+
+    // Initialize
+    renderPresList();
   </script>
 </body>
 </html>
