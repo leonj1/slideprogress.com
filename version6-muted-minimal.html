@@ -5,14 +5,49 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Presentation Topics</title>
   <style>
+    :root {
+      --bg: #18181b;
+      --bg-elevated: #27272a;
+      --border: #27272a;
+      --border-hover: #3f3f46;
+      --text-primary: #fafafa;
+      --text-secondary: #d4d4d8;
+      --text-muted: #a1a1aa;
+      --text-faint: #71717a;
+      --text-dim: #52525b;
+      --text-ghost: #3f3f46;
+      --accent: #fafafa;
+      --accent-hover: #e4e4e7;
+      --danger: #ef4444;
+      --card-hover: rgba(255,255,255,0.02);
+      --drag-highlight: rgba(255,255,255,0.05);
+    }
+    [data-theme="light"] {
+      --bg: #fafafa;
+      --bg-elevated: #f4f4f5;
+      --border: #e4e4e7;
+      --border-hover: #d4d4d8;
+      --text-primary: #18181b;
+      --text-secondary: #27272a;
+      --text-muted: #52525b;
+      --text-faint: #71717a;
+      --text-dim: #a1a1aa;
+      --text-ghost: #d4d4d8;
+      --accent: #18181b;
+      --accent-hover: #27272a;
+      --danger: #dc2626;
+      --card-hover: rgba(0,0,0,0.02);
+      --drag-highlight: rgba(0,0,0,0.05);
+    }
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-      background: #18181b;
+      background: var(--bg);
       min-height: 100vh;
       padding: 60px 40px;
       display: flex;
       justify-content: center;
+      transition: background 0.3s ease;
     }
     .container {
       max-width: 850px;
@@ -23,11 +58,11 @@
       justify-content: space-between;
       align-items: baseline;
       margin-bottom: 50px;
-      border-bottom: 1px solid #27272a;
+      border-bottom: 1px solid var(--border);
       padding-bottom: 20px;
     }
     h1 {
-      color: #fafafa;
+      color: var(--text-primary);
       font-size: 1.8rem;
       font-weight: 500;
     }
@@ -37,15 +72,15 @@
       gap: 12px;
     }
     .status {
-      color: #52525b;
+      color: var(--text-dim);
       font-size: 0.9rem;
       margin-right: 8px;
     }
-    .status span { color: #a1a1aa; }
+    .status span { color: var(--text-muted); }
     .header-btn {
       background: none;
-      border: 1px solid #3f3f46;
-      color: #71717a;
+      border: 1px solid var(--border-hover);
+      color: var(--text-faint);
       padding: 6px 14px;
       border-radius: 4px;
       cursor: pointer;
@@ -53,8 +88,20 @@
       transition: all 0.2s ease;
     }
     .header-btn:hover {
-      border-color: #52525b;
-      color: #a1a1aa;
+      border-color: var(--text-dim);
+      color: var(--text-muted);
+    }
+    .theme-toggle {
+      background: none;
+      border: none;
+      color: var(--text-faint);
+      cursor: pointer;
+      font-size: 1.1rem;
+      padding: 4px;
+      transition: color 0.2s ease;
+    }
+    .theme-toggle:hover {
+      color: var(--text-muted);
     }
 
     /* Home / List view */
@@ -71,13 +118,13 @@
       margin-bottom: 30px;
     }
     .home-title {
-      color: #a1a1aa;
+      color: var(--text-muted);
       font-size: 0.85rem;
     }
     .new-btn {
-      background: #fafafa;
+      background: var(--accent);
       border: none;
-      color: #18181b;
+      color: var(--bg);
       padding: 10px 20px;
       border-radius: 6px;
       cursor: pointer;
@@ -86,7 +133,7 @@
       transition: all 0.2s ease;
     }
     .new-btn:hover {
-      background: #e4e4e7;
+      background: var(--accent-hover);
     }
     .pres-list {
       display: flex;
@@ -95,7 +142,7 @@
     }
     .pres-item {
       background: transparent;
-      border: 1px solid #27272a;
+      border: 1px solid var(--border);
       border-radius: 8px;
       padding: 20px 24px;
       cursor: pointer;
@@ -105,18 +152,18 @@
       align-items: center;
     }
     .pres-item:hover {
-      border-color: #3f3f46;
-      background: rgba(255,255,255,0.02);
+      border-color: var(--border-hover);
+      background: var(--card-hover);
     }
     .pres-info { flex: 1; }
     .pres-name {
-      color: #d4d4d8;
+      color: var(--text-secondary);
       font-size: 1.1rem;
       font-weight: 500;
       margin-bottom: 4px;
     }
     .pres-meta {
-      color: #52525b;
+      color: var(--text-dim);
       font-size: 0.8rem;
     }
     .pres-actions {
@@ -126,22 +173,22 @@
     .pres-action {
       background: none;
       border: none;
-      color: #52525b;
+      color: var(--text-dim);
       cursor: pointer;
       padding: 6px 10px;
       font-size: 0.85rem;
       transition: color 0.2s ease;
     }
     .pres-action:hover {
-      color: #a1a1aa;
+      color: var(--text-muted);
     }
     .pres-action.delete:hover {
-      color: #ef4444;
+      color: var(--danger);
     }
     .empty-state {
       text-align: center;
       padding: 60px 20px;
-      color: #52525b;
+      color: var(--text-dim);
     }
     .empty-state p {
       margin-bottom: 20px;
@@ -155,7 +202,7 @@
       display: block;
     }
     .setup-header {
-      color: #a1a1aa;
+      color: var(--text-muted);
       font-size: 0.85rem;
       margin-bottom: 20px;
     }
@@ -166,8 +213,8 @@
       width: 100%;
       background: transparent;
       border: none;
-      border-bottom: 1px solid #3f3f46;
-      color: #fafafa;
+      border-bottom: 1px solid var(--border-hover);
+      color: var(--text-primary);
       padding: 12px 0;
       font-size: 1.4rem;
       font-weight: 500;
@@ -175,10 +222,10 @@
       transition: border-color 0.2s ease;
     }
     .name-input:focus {
-      border-color: #52525b;
+      border-color: var(--text-dim);
     }
     .name-input::placeholder {
-      color: #3f3f46;
+      color: var(--text-ghost);
     }
     .topic-input-wrap {
       display: flex;
@@ -187,9 +234,9 @@
     }
     .topic-input {
       flex: 1;
-      background: #27272a;
-      border: 1px solid #3f3f46;
-      color: #fafafa;
+      background: var(--bg-elevated);
+      border: 1px solid var(--border-hover);
+      color: var(--text-primary);
       padding: 14px 18px;
       border-radius: 6px;
       font-size: 1rem;
@@ -197,15 +244,15 @@
       transition: border-color 0.2s ease;
     }
     .topic-input:focus {
-      border-color: #52525b;
+      border-color: var(--text-dim);
     }
     .topic-input::placeholder {
-      color: #52525b;
+      color: var(--text-dim);
     }
     .add-btn {
-      background: #27272a;
-      border: 1px solid #3f3f46;
-      color: #a1a1aa;
+      background: var(--bg-elevated);
+      border: 1px solid var(--border-hover);
+      color: var(--text-muted);
       padding: 0 20px;
       border-radius: 6px;
       cursor: pointer;
@@ -213,8 +260,8 @@
       transition: all 0.2s ease;
     }
     .add-btn:hover {
-      background: #3f3f46;
-      color: #fafafa;
+      background: var(--border-hover);
+      color: var(--text-primary);
     }
     .topic-list {
       margin-bottom: 30px;
@@ -224,7 +271,7 @@
       align-items: center;
       gap: 16px;
       padding: 14px 0;
-      border-bottom: 1px solid #27272a;
+      border-bottom: 1px solid var(--border);
       cursor: grab;
       transition: background 0.2s ease, opacity 0.2s ease;
     }
@@ -233,42 +280,42 @@
     }
     .topic-item.dragging {
       opacity: 0.4;
-      background: rgba(255,255,255,0.05);
+      background: var(--drag-highlight);
     }
     .topic-item.drag-over {
-      border-top: 2px solid #fafafa;
+      border-top: 2px solid var(--accent);
     }
     .topic-item .drag-handle {
-      color: #3f3f46;
+      color: var(--text-ghost);
       font-size: 1rem;
       cursor: grab;
       padding: 0 4px;
       user-select: none;
     }
     .topic-item .drag-handle:hover {
-      color: #71717a;
+      color: var(--text-faint);
     }
     .topic-item .num {
-      color: #52525b;
+      color: var(--text-dim);
       font-size: 0.9rem;
       min-width: 24px;
     }
     .topic-item .text {
       flex: 1;
-      color: #d4d4d8;
+      color: var(--text-secondary);
       font-size: 1rem;
     }
     .remove-btn {
       background: none;
       border: none;
-      color: #52525b;
+      color: var(--text-dim);
       cursor: pointer;
       font-size: 1.1rem;
       padding: 4px 8px;
       transition: color 0.2s ease;
     }
     .remove-btn:hover {
-      color: #ef4444;
+      color: var(--danger);
     }
     .setup-actions {
       display: flex;
@@ -276,9 +323,9 @@
       margin-top: 10px;
     }
     .save-btn {
-      background: #fafafa;
+      background: var(--accent);
       border: none;
-      color: #18181b;
+      color: var(--bg);
       padding: 14px 32px;
       border-radius: 6px;
       cursor: pointer;
@@ -287,17 +334,17 @@
       transition: all 0.2s ease;
     }
     .save-btn:hover {
-      background: #e4e4e7;
+      background: var(--accent-hover);
     }
     .save-btn:disabled {
-      background: #3f3f46;
-      color: #71717a;
+      background: var(--border-hover);
+      color: var(--text-faint);
       cursor: not-allowed;
     }
     .cancel-btn {
       background: none;
-      border: 1px solid #3f3f46;
-      color: #71717a;
+      border: 1px solid var(--border-hover);
+      color: var(--text-faint);
       padding: 14px 24px;
       border-radius: 6px;
       cursor: pointer;
@@ -305,8 +352,8 @@
       transition: all 0.2s ease;
     }
     .cancel-btn:hover {
-      border-color: #52525b;
-      color: #a1a1aa;
+      border-color: var(--text-dim);
+      color: var(--text-muted);
     }
 
     /* Presentation mode */
@@ -318,7 +365,7 @@
     }
     .card {
       background: transparent;
-      border-left: 3px solid #3f3f46;
+      border-left: 3px solid var(--border-hover);
       padding: 22px 0 22px 28px;
       margin-bottom: 8px;
       cursor: pointer;
@@ -328,30 +375,30 @@
       gap: 20px;
     }
     .card:hover:not(.done) {
-      border-left-color: #71717a;
-      background: rgba(255,255,255,0.02);
+      border-left-color: var(--text-faint);
+      background: var(--card-hover);
     }
     .card.done {
-      border-left-color: #27272a;
+      border-left-color: var(--border);
       opacity: 0.25;
       cursor: default;
     }
     .card.done .num {
-      color: #3f3f46;
+      color: var(--text-ghost);
     }
     .card.done .title {
-      color: #3f3f46;
+      color: var(--text-ghost);
     }
     .num {
       font-size: 1rem;
       font-weight: 600;
-      color: #71717a;
+      color: var(--text-faint);
       min-width: 28px;
       transition: all 0.3s ease;
       font-variant-numeric: tabular-nums;
     }
     .title {
-      color: #d4d4d8;
+      color: var(--text-secondary);
       font-size: 1.25rem;
       font-weight: 400;
       transition: all 0.3s ease;
@@ -366,17 +413,17 @@
     .dot {
       width: 8px;
       height: 8px;
-      background: #3f3f46;
+      background: var(--text-ghost);
       border-radius: 50%;
       transition: all 0.3s ease;
     }
     .dot.active {
-      background: #52525b;
+      background: var(--text-dim);
     }
     .instructions {
       margin-top: 60px;
       text-align: center;
-      color: #3f3f46;
+      color: var(--text-ghost);
       font-size: 0.8rem;
     }
   </style>
@@ -389,6 +436,7 @@
         <div class="status" id="statusWrap" style="display:none"><span id="done">0</span> of <span id="total">0</span></div>
         <button class="header-btn" id="resetBtn" style="display:none">Reset</button>
         <button class="header-btn" id="backBtn" style="display:none">Back</button>
+        <button class="theme-toggle" id="themeToggle" title="Toggle theme">&#9790;</button>
       </div>
     </header>
 
@@ -708,6 +756,27 @@
       });
       doneEl.textContent = count;
     }
+
+    // Theme toggle
+    const themeToggle = document.getElementById('themeToggle');
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme === 'light') {
+      document.documentElement.setAttribute('data-theme', 'light');
+      themeToggle.innerHTML = '&#9728;';
+    }
+
+    themeToggle.onclick = () => {
+      const isLight = document.documentElement.getAttribute('data-theme') === 'light';
+      if (isLight) {
+        document.documentElement.removeAttribute('data-theme');
+        localStorage.setItem('theme', 'dark');
+        themeToggle.innerHTML = '&#9790;';
+      } else {
+        document.documentElement.setAttribute('data-theme', 'light');
+        localStorage.setItem('theme', 'light');
+        themeToggle.innerHTML = '&#9728;';
+      }
+    };
 
     // Initialize
     renderPresList();
